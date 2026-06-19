@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Get-ChildItem -Force | Select-Object Name, Length, Mode; Write-Output \"---GIT---\"; \\(Get-Command git -ErrorAction SilentlyContinue\\).Source; Write-Output \"---MAKE---\"; \\(Get-Command make -ErrorAction SilentlyContinue\\).Source; Write-Output \"---NODE---\"; \\(Get-Command node -ErrorAction SilentlyContinue\\).Source; node --version 2>$null; Write-Output \"---NPM---\"; \\(Get-Command npm -ErrorAction SilentlyContinue\\).Source; Write-Output \"---PYTHON---\"; \\(Get-Command python -ErrorAction SilentlyContinue\\).Source; python --version 2>$null)",
+      "PowerShell($src='C:\\\\Users\\\\Rafael\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Users-Rafael-Documents-Hacka-Loomi\\\\f926471a-1d0d-4613-b19f-27baf4564c7e\\\\scratchpad\\\\tmpl'; $dst='C:\\\\Users\\\\Rafael\\\\Documents\\\\Hacka Loomi'; robocopy $src $dst /E /XD .git /NFL /NDL /NJH /NJS /NP | Out-Null; Write-Output \"robocopy exit=$LASTEXITCODE \\(0-7 = sucesso\\)\"; Write-Output \"---conteudo---\"; Get-ChildItem -Force $dst | Select-Object Mode,Name)",
+      "PowerShell($env:PATH = [System.Environment]::GetEnvironmentVariable\\('PATH','Machine'\\) + ';' + [System.Environment]::GetEnvironmentVariable\\('PATH','User'\\); $m = Get-Command make -ErrorAction SilentlyContinue; if \\($m\\) { Write-Output \"make em: $\\($m.Source\\)\"; & $m.Source --version | Select-Object -First 1 } else { Write-Output \"make ainda nao no PATH desta sessao \\(winget instalou; precisa de novo shell\\)\"; Get-ChildItem 'C:\\\\ProgramData\\\\chocolatey\\\\bin\\\\make.exe','C:\\\\ProgramData\\\\mingw64\\\\bin\\\\make.exe' -ErrorAction SilentlyContinue; Get-ChildItem \"$env:LOCALAPPDATA\\\\Microsoft\\\\WinGet\\\\Packages\" -Recurse -Filter make.exe -ErrorAction SilentlyContinue | Select-Object -First 3 FullName })",
+      "PowerShell(Set-Location 'C:\\\\Users\\\\Rafael\\\\Documents\\\\Hacka Loomi'; powershell -NoProfile -ExecutionPolicy Bypass -File scripts/dev.ps1 2>&1 | Out-File -FilePath 'C:\\\\Users\\\\Rafael\\\\Documents\\\\Hacka Loomi\\\\dev.log' -Encoding utf8)",
+      "Bash(git init *)",
+      "Bash(git add *)",
+      "Bash(git -c user.name=Loomi -c user.email=operacoes@loomi.com.br commit -q -m 'chore: inicializa Hacka Loomi a partir do template local da Loomi *)"
+    ]
+  }
+}
