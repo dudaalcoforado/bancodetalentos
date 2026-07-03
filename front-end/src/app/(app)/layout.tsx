@@ -1,6 +1,8 @@
 import Image from 'next/image'
 import Link from 'next/link'
 
+import { MainNav } from './_components/MainNav'
+
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-background">
@@ -17,14 +19,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             />
             <span className="font-display text-sm font-semibold">Conta</span>
           </Link>
-          <nav className="flex items-center gap-4">
-            <Link
-              href="/talent-bank"
-              className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-            >
-              Banco de Talentos
-            </Link>
-          </nav>
+          <MainNav />
         </div>
       </header>
 
