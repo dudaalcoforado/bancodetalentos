@@ -79,27 +79,24 @@ async function parseError(res: Response): Promise<ApiError> {
   return new ApiError(message, res.status, details)
 }
 
-async function rawRequest<T>(
+function authHeaders(auth: boolean): Record<string, string> {
+  if (!auth) return {}
+  const access = tokenStore.getAccess()
+  return access ? { Authorization: `Bearer ${access}` } : {}
+}
+
+async function withAuthRetry(
   path: string,
   options: RequestOptions,
-): Promise<T> {
-  const { body, auth = true, headers, skipRefresh, ...rest } = options
-
+  send: (headers: Record<string, string>) => Promise<Response>,
+): Promise<Response> {
+  const { auth = true, headers, skipRefresh } = options
   const finalHeaders: Record<string, string> = {
-    ...(body !== undefined ? { 'Content-Type': 'application/json' } : {}),
     ...(headers as Record<string, string> | undefined),
+    ...authHeaders(auth),
   }
 
-  if (auth) {
-    const access = tokenStore.getAccess()
-    if (access) finalHeaders['Authorization'] = `Bearer ${access}`
-  }
-
-  const res = await fetch(`${API_BASE_URL}${path}`, {
-    ...rest,
-    headers: finalHeaders,
-    body: body !== undefined ? JSON.stringify(body) : undefined,
-  })
+  const res = await send(finalHeaders)
 
   if (res.status === 401 && auth && !skipRefresh && tokenStore.getRefresh()) {
     try {
@@ -108,17 +105,67 @@ async function rawRequest<T>(
       tokenStore.clear()
       throw err
     }
-    return rawRequest<T>(path, { ...options, skipRefresh: true })
+    return withAuthRetry(path, { ...options, skipRefresh: true }, send)
   }
 
-  if (!res.ok) {
-    throw await parseError(res)
-  }
+  return res
+}
 
+async function rawRequest<T>(
+  path: string,
+  options: RequestOptions,
+): Promise<T> {
+  const { body, ...rest } = options
+
+  const res = await withAuthRetry(path, options, (headers) =>
+    fetch(`${API_BASE_URL}${path}`, {
+      ...rest,
+      headers: {
+        ...(body !== undefined ? { 'Content-Type': 'application/json' } : {}),
+        ...headers,
+      },
+      body: body !== undefined ? JSON.stringify(body) : undefined,
+    }),
+  )
+
+  if (!res.ok) throw await parseError(res)
   if (res.status === 204) return undefined as T
 
   const json = (await res.json()) as BackendEnvelope<T>
   return json.data
+}
+
+async function rawFormRequest<T>(
+  path: string,
+  formData: FormData,
+  options: RequestOptions,
+): Promise<T> {
+  const res = await withAuthRetry(path, options, (headers) =>
+    fetch(`${API_BASE_URL}${path}`, {
+      ...options,
+      method: 'POST',
+      headers,
+      body: formData,
+    }),
+  )
+
+  if (!res.ok) throw await parseError(res)
+
+  const json = (await res.json()) as BackendEnvelope<T>
+  return json.data
+}
+
+async function rawBlobRequest(
+  path: string,
+  options: RequestOptions,
+): Promise<Blob> {
+  const { body: _body, auth: _auth, skipRefresh: _skipRefresh, ...rest } = options
+  const res = await withAuthRetry(path, options, (headers) =>
+    fetch(`${API_BASE_URL}${path}`, { ...rest, headers }),
+  )
+
+  if (!res.ok) throw await parseError(res)
+  return res.blob()
 }
 
 export const api = {
@@ -136,4 +183,11 @@ export const api = {
   ): Promise<T> => rawRequest<T>(path, { ...options, method: 'PATCH', body }),
   delete: <T,>(path: string, options: RequestOptions = {}): Promise<T> =>
     rawRequest<T>(path, { ...options, method: 'DELETE' }),
+  postForm: <T,>(
+    path: string,
+    formData: FormData,
+    options: RequestOptions = {},
+  ): Promise<T> => rawFormRequest<T>(path, formData, options),
+  getBlob: (path: string, options: RequestOptions = {}): Promise<Blob> =>
+    rawBlobRequest(path, { ...options, method: 'GET' }),
 }

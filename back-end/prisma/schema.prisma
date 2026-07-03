@@ -37,3 +37,52 @@ model RefreshToken {
 
   @@index([userId])
 }
+
+enum TalentApplicationStage {
+  SEM_FASE
+  REPROVADO_TRIAGEM
+  SELECAO
+  ENTREVISTA_FIT
+  DEVOLUTIVA_FIT
+  DESAFIO
+  DEVOLUTIVA_DESAFIO
+  ENTREVISTA_TECNICA
+  DEVOLUTIVA_ENTREVISTA_TECNICA
+  DECISAO
+  PROPOSTA
+  CONTRATACAO
+}
+
+model TalentApplication {
+  id                String                 @id @default(uuid())
+  fullName          String
+  preferredName     String
+  pronoun           String?
+  city              String
+  email             String
+  phone             String
+  linkedin          String
+  resumeFileName    String
+  resumeStoragePath String
+  vaga              String?
+  seniority         String?
+  salaryExpectation String?
+  stacks            String?
+  skills            String?
+  education         String?
+  experience        String?
+  values            String
+  motivation        String?
+  futureVision      String?
+  aiLevel           String?
+  aiPurpose         String?
+  aiAutomation      String?
+  howFound          String?
+  referredBy        String?
+  affirmativeGroups String?
+  stage             TalentApplicationStage @default(SEM_FASE)
+  createdAt         DateTime               @default(now())
+
+  @@index([createdAt])
+  @@index([stage])
+}
