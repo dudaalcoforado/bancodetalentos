@@ -53,6 +53,47 @@ enum TalentApplicationStage {
   CONTRATACAO
 }
 
+enum WeeklyReportPriority {
+  P0
+  P1
+  P2
+  P3
+}
+
+model WeeklyReport {
+  id       String       @id @default(uuid())
+  titulo   String
+  criadoEm DateTime     @default(now())
+  vagas    ReportVaga[]
+
+  @@index([criadoEm])
+}
+
+model ReportVaga {
+  id         String               @id @default(uuid())
+  reportId   String
+  report     WeeklyReport         @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  nome       String
+  prioridade WeeklyReportPriority @default(P1)
+  qtdVagas   Int                  @default(1)
+  ordem      Int                  @default(0)
+  fases      ReportPhase[]
+
+  @@index([reportId])
+}
+
+model ReportPhase {
+  id          String     @id @default(uuid())
+  vagaId      String
+  vaga        ReportVaga @relation(fields: [vagaId], references: [id], onDelete: Cascade)
+  fase        String
+  quantidade  String
+  observacoes String
+  ordem       Int        @default(0)
+
+  @@index([vagaId])
+}
+
 model TalentApplication {
   id                String                 @id @default(uuid())
   fullName          String

@@ -10,6 +10,7 @@ import { HealthModule } from './modules/health/health.module';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { TalentBankModule } from './modules/talent-bank/talent-bank.module';
+import { WeeklyReportsModule } from './modules/weekly-reports/weekly-reports.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { TalentBankModule } from './modules/talent-bank/talent-bank.module';
     UsersModule,
     AuthModule,
     TalentBankModule,
+    WeeklyReportsModule,
   ],
   providers: [
     { provide: APP_FILTER, useClass: AllExceptionsFilter },
