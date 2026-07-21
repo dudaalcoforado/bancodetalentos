@@ -249,7 +249,7 @@ export const STEPS: StepDef[] = [
         type: 'checkbox',
         label: 'Você gostaria de entrar em um banco afirmativo?',
         hint: 'Opcional. Essa informação nos ajuda em ações afirmativas e é tratada com confidencialidade.',
-        options: ['Pessoas LGBTQIA+', 'Mulheres', 'Pessoas pretas', 'Prefiro não informar'],
+        options: ['Pessoas LGBTQIA+', 'Mulheres', 'Pessoas pretas', 'PCD'],
       },
     ],
   },
