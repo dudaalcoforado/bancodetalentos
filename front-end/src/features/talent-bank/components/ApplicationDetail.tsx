@@ -88,6 +88,11 @@ export function ApplicationDetail({
         {application.salaryExpectation ? (
           <Badge variant="outline">{application.salaryExpectation}</Badge>
         ) : null}
+        {application.recruiter ? (
+          <Badge className="border-0 bg-primary/10 text-primary">
+            Recrutador · {application.recruiter}
+          </Badge>
+        ) : null}
         {affirmativeGroups.map((group) => (
           <Badge key={group} className="border-0 bg-primary/10 text-primary">
             {group}

@@ -58,4 +58,7 @@ export const talentBankApi = {
 
   updateStage: (id: string, stage: TalentApplicationStage): Promise<TalentApplication> =>
     api.patch<TalentApplication>(`/talent-bank/applications/${id}/stage`, { stage }),
+
+  updateRecruiter: (id: string, recruiter: string | null): Promise<TalentApplication> =>
+    api.patch<TalentApplication>(`/talent-bank/applications/${id}/recruiter`, { recruiter }),
 }

@@ -10,6 +10,7 @@ import { HealthModule } from './modules/health/health.module';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { TalentBankModule } from './modules/talent-bank/talent-bank.module';
+import { VagasModule } from './modules/vagas/vagas.module';
 import { WeeklyReportsModule } from './modules/weekly-reports/weekly-reports.module';
 
 @Module({
@@ -23,6 +24,7 @@ import { WeeklyReportsModule } from './modules/weekly-reports/weekly-reports.mod
     UsersModule,
     AuthModule,
     TalentBankModule,
+    VagasModule,
     WeeklyReportsModule,
   ],
   providers: [

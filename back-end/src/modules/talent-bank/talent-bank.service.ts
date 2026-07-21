@@ -92,6 +92,17 @@ export class TalentBankService {
     });
   }
 
+  async updateRecruiter(
+    id: string,
+    recruiter: string | null,
+  ): Promise<TalentApplication> {
+    await this.findOne(id);
+    return this.prisma.talentApplication.update({
+      where: { id },
+      data: { recruiter },
+    });
+  }
+
   async getResumeFile(id: string): Promise<ResumeFile> {
     const application = await this.findOne(id);
     const filePath = path.resolve(

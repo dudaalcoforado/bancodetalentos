@@ -90,6 +90,9 @@ export class TalentApplicationEntity {
   @ApiProperty({ type: [String] })
   affirmativeGroups!: string[];
 
+  @ApiProperty({ nullable: true, type: String })
+  recruiter!: string | null;
+
   @ApiProperty({ enum: TalentApplicationStage })
   stage!: TalentApplicationStage;
 
@@ -123,6 +126,7 @@ export class TalentApplicationEntity {
       howFound,
       referredBy,
       affirmativeGroups,
+      recruiter,
       stage,
       createdAt,
     } = application;
@@ -154,6 +158,7 @@ export class TalentApplicationEntity {
       howFound,
       referredBy,
       affirmativeGroups: parseJsonArray(affirmativeGroups),
+      recruiter,
       stage,
       createdAt,
     });

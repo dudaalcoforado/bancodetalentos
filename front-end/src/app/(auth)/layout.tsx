@@ -1,5 +1,4 @@
-import Image from 'next/image'
-import Link from 'next/link'
+import { Brand } from '@/components/Brand'
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -14,16 +13,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       />
 
       <div className="w-full max-w-md">
-        <Link href="/" className="mb-8 flex items-center justify-center gap-2 text-foreground/70 transition-opacity hover:opacity-100">
-          <Image
-            src="/gzero-logo.png"
-            alt="Gzero"
-            width={56}
-            height={20}
-            sizes="56px"
-            className="opacity-80"
-          />
-        </Link>
+        <Brand className="mb-8 justify-center" />
         {children}
       </div>
     </main>
