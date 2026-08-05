@@ -135,14 +135,9 @@ export default function TalentBankPage() {
           <span className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
             <Heart className="size-6" strokeWidth={1.75} />
           </span>
-          <div className="flex flex-col gap-0.5">
-            <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">
-              Banco de Talentos
-            </span>
-            <h1 className="font-display text-3xl font-bold tracking-tight sm:text-[2.4rem] sm:leading-[1.05]">
-              Processo Seletivo
-            </h1>
-          </div>
+          <h1 className="font-display text-3xl font-bold tracking-tight sm:text-[2.4rem] sm:leading-[1.05]">
+            Processo Seletivo
+          </h1>
         </div>
 
         <div className="flex items-start gap-3 rounded-2xl border border-border/60 bg-muted/30 px-5 py-4 sm:max-w-lg">
@@ -160,6 +155,17 @@ export default function TalentBankPage() {
           <HeroLink href="/vagas" icon={<PieChart className="size-4" />} label="Vagas" />
         </div>
       </header>
+
+      {/* Início da seção do Banco de Talentos */}
+      <div className="flex items-center gap-3 border-t border-border/40 pt-5">
+        <span className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+          <Heart className="size-4" strokeWidth={2} />
+        </span>
+        <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">
+          Banco de Talentos
+        </h2>
+        <span className="h-px flex-1 bg-border/50" />
+      </div>
 
       {hasApplications ? (
         <div className="flex flex-col gap-2">
