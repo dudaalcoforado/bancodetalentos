@@ -1,7 +1,16 @@
 'use client'
 
 import { useState } from 'react'
-import { ArrowLeft, ArrowRight, CheckCircle2, Loader2, UploadCloud } from 'lucide-react'
+import Image from 'next/image'
+import {
+  ArrowLeft,
+  ArrowRight,
+  ArrowUpRight,
+  CheckCircle2,
+  Clock,
+  Loader2,
+  UploadCloud,
+} from 'lucide-react'
 
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -16,6 +25,13 @@ import { useSubmitApplication } from '../hooks/useSubmitApplication'
 import { INITIAL_FORM_STATE, STEPS, type FieldDef, type TalentFormState } from '../steps'
 
 const MAX_RESUME_SIZE_BYTES = 10 * 1024 * 1024
+
+const PS_LINK =
+  'https://forest-brownie-850.notion.site/Processo-Seletivo-Loomi-1ba00e5aacfa80d6967be9de394fb2ac'
+
+/** Glassy, rounded, purple-tinted card shared across every step of the form. */
+const CARD_CLASS =
+  'rounded-3xl border border-primary/10 bg-card/80 shadow-2xl shadow-primary/10 ring-1 ring-primary/10 backdrop-blur-xl'
 
 export function TalentApplicationForm() {
   const [started, setStarted] = useState(false)
@@ -76,13 +92,15 @@ export function TalentApplicationForm() {
 
   if (submit.isSuccess) {
     return (
-      <Card className="border-border/60 shadow-xl ring-1 ring-foreground/5">
+      <Card className={CARD_CLASS}>
         <CardContent className="flex flex-col items-center gap-3 p-10 text-center">
-          <CheckCircle2 className="size-10 text-primary" />
+          <div className="flex size-16 items-center justify-center rounded-full bg-primary/10 ring-1 ring-primary/15">
+            <CheckCircle2 className="size-9 text-primary" />
+          </div>
           <h1 className="font-display text-2xl font-bold tracking-tight">
             Candidatura enviada!
           </h1>
-          <p className="text-sm text-muted-foreground">
+          <p className="max-w-sm text-sm leading-relaxed text-muted-foreground">
             Obrigado por se candidatar ao Banco de Talentos Loomi. Assim que surgir uma
             oportunidade compatível, vamos te procurar por aqui.
           </p>
@@ -93,29 +111,65 @@ export function TalentApplicationForm() {
 
   if (!started) {
     return (
-      <Card className="border-border/60 shadow-xl ring-1 ring-foreground/5">
-        <CardContent className="flex flex-col gap-6 p-8">
-          <div className="flex flex-col gap-2">
-            <p className="text-xs font-semibold uppercase tracking-wide text-primary">
-              Loomi · Carreiras
-            </p>
-            <h1 className="font-display text-3xl font-bold tracking-tight">
-              Banco de Talentos Loomi
-            </h1>
-          </div>
-          <p className="text-sm leading-relaxed text-muted-foreground">
+      <Card className={CARD_CLASS}>
+        <CardContent className="flex flex-col items-center gap-6 p-8 text-center sm:p-10">
+          <Image
+            src="/loomi-wordmark.png"
+            alt="Loomi"
+            width={1399}
+            height={249}
+            sizes="176px"
+            priority
+            className="h-auto w-44"
+          />
+
+          <h1 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">
+            Banco de Talentos{' '}
+            <span className="bg-gradient-to-r from-primary to-[#b06bff] bg-clip-text text-transparent">
+              Loomi
+            </span>
+          </h1>
+
+          <p className="max-w-md text-sm leading-relaxed text-muted-foreground">
             Na Loomi, acreditamos que talento nasce de histórias diversas, caminhos únicos e
-            sonhos autênticos. Queremos conhecer quem você é, como você trabalha e o que te
-            move, além do que está no currículo.
+            sonhos autênticos. Este espaço foi criado para que você se apresente de forma leve,
+            honesta e inteira — queremos conhecer quem você é, como trabalha e o que te move,
+            além do que está no currículo <span aria-hidden>💜</span>
           </p>
-          <p className="text-sm leading-relaxed text-muted-foreground">
+          <p className="max-w-md text-sm leading-relaxed text-muted-foreground">
             Sempre que surge uma nova oportunidade por aqui, este é o primeiro lugar que
             procuramos por pessoas candidatas.
           </p>
-          <Button size="lg" className="mt-2 w-full" onClick={() => setStarted(true)}>
-            Começar
-            <ArrowRight className="size-4" />
-          </Button>
+
+          <p className="flex flex-wrap items-center justify-center gap-x-1.5 gap-y-1 text-sm font-medium">
+            <span>
+              Vamos nessa? <span aria-hidden>💥</span>
+            </span>
+            <a
+              href={PS_LINK}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-0.5 text-primary underline decoration-primary/40 underline-offset-4 transition-colors hover:decoration-primary"
+            >
+              Saiba mais sobre o PS Loomi!
+              <ArrowUpRight className="size-4" />
+            </a>
+          </p>
+
+          <div className="mt-1 flex flex-col items-center gap-2">
+            <Button
+              size="lg"
+              onClick={() => setStarted(true)}
+              className="h-12 rounded-full bg-gradient-to-r from-primary to-[#7c3aed] px-10 text-base shadow-lg shadow-primary/30 transition-transform hover:-translate-y-0.5"
+            >
+              Start
+              <ArrowRight className="size-4" />
+            </Button>
+            <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+              <Clock className="size-3.5" />
+              Leva 7+ minutos
+            </p>
+          </div>
         </CardContent>
       </Card>
     )
@@ -129,8 +183,8 @@ export function TalentApplicationForm() {
         : null
 
   return (
-    <Card className="border-border/60 shadow-xl ring-1 ring-foreground/5">
-      <CardContent className="flex flex-col gap-6 p-8">
+    <Card className={CARD_CLASS}>
+      <CardContent className="flex flex-col gap-6 p-8 sm:p-10">
         <div className="flex flex-col gap-2">
           <p className="text-xs font-semibold uppercase tracking-wide text-primary">
             Etapa {stepIndex + 1} de {STEPS.length}
@@ -167,12 +221,21 @@ export function TalentApplicationForm() {
         ) : null}
 
         <div className="flex items-center justify-between gap-3">
-          <Button type="button" variant="ghost" onClick={goBack} disabled={stepIndex === 0}>
+          <Button
+            type="button"
+            variant="ghost"
+            size="lg"
+            className="rounded-full"
+            onClick={goBack}
+            disabled={stepIndex === 0}
+          >
             <ArrowLeft className="size-4" />
             Voltar
           </Button>
           <Button
             type="button"
+            size="lg"
+            className="rounded-full bg-gradient-to-r from-primary to-[#7c3aed] px-6 shadow-md shadow-primary/25"
             onClick={goNext}
             disabled={!isStepValid() || submit.isPending}
           >
@@ -206,7 +269,7 @@ function renderField(
 
   if (field.type === 'file') {
     return (
-      <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-dashed border-border bg-muted/40 px-4 py-4 text-sm transition-colors hover:border-primary/50">
+      <label className="flex cursor-pointer items-center gap-3 rounded-2xl border border-dashed border-primary/25 bg-primary/5 px-4 py-4 text-sm transition-colors hover:border-primary/50 hover:bg-primary/10">
         <input
           id={field.id}
           type="file"
@@ -226,6 +289,7 @@ function renderField(
     return (
       <Textarea
         id={field.id}
+        className="rounded-xl"
         value={typeof value === 'string' ? value : ''}
         placeholder={field.placeholder}
         onChange={(e) => setValue(field.id, e.target.value as never)}
@@ -237,6 +301,7 @@ function renderField(
     return (
       <Select
         id={field.id}
+        className="rounded-xl"
         value={typeof value === 'string' ? value : ''}
         onChange={(e) => setValue(field.id, e.target.value as never)}
       >
@@ -267,6 +332,7 @@ function renderField(
     <Input
       id={field.id}
       type={field.type}
+      className="rounded-xl"
       value={typeof value === 'string' ? value : ''}
       placeholder={field.placeholder}
       onChange={(e) => setValue(field.id, e.target.value as never)}

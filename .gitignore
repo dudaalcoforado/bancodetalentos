@@ -27,6 +27,10 @@ dist/
 *.db
 *.db-journal
 
+# Production DB dumps — NEVER commit (vaza PII + incha o histórico)
+*_dump_*.sql
+hub_prod_dump_*.sql
+
 # Security Gate (Trivy)
 .security/
 /bin/trivy

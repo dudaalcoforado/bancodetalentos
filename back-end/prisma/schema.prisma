@@ -94,6 +94,27 @@ model ReportPhase {
   @@index([vagaId])
 }
 
+model Vaga {
+  id               String    @id @default(uuid())
+  name             String
+  status           String    @default("Aberta")
+  nivelRequisitado String?
+  nivelContratado  String?
+  projeto          String?
+  pessoaAlocada    String?
+  recrutadores     String?
+  prioridade       String?
+  fonte            String?
+  abertura         DateTime?
+  fechamento       DateTime?
+  dataEntrada      DateTime?
+  prazoFechamento  DateTime?
+  createdAt        DateTime  @default(now())
+
+  @@index([status])
+  @@index([createdAt])
+}
+
 model TalentApplication {
   id                String                 @id @default(uuid())
   fullName          String
@@ -121,6 +142,7 @@ model TalentApplication {
   howFound          String?
   referredBy        String?
   affirmativeGroups String?
+  recruiter         String?
   stage             TalentApplicationStage @default(SEM_FASE)
   createdAt         DateTime               @default(now())
 

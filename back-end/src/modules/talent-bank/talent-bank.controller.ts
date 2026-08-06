@@ -23,6 +23,7 @@ import type { Response } from 'express';
 
 import { CreateTalentApplicationDto } from './dto/create-talent-application.dto';
 import { TalentApplicationEntity } from './dto/talent-application.entity';
+import { UpdateTalentApplicationRecruiterDto } from './dto/update-talent-application-recruiter.dto';
 import { UpdateTalentApplicationStageDto } from './dto/update-talent-application-stage.dto';
 import { TalentBankService } from './talent-bank.service';
 
@@ -77,6 +78,23 @@ export class TalentBankController {
     @Body() dto: UpdateTalentApplicationStageDto,
   ): Promise<TalentApplicationEntity> {
     const application = await this.talentBankService.updateStage(id, dto.stage);
+    return TalentApplicationEntity.fromPrisma(application);
+  }
+
+  @Patch(':id/recruiter')
+  @ApiOperation({
+    summary:
+      'Assign (or unassign) the recruiter responsible for an application',
+  })
+  @ApiOkResponse({ type: TalentApplicationEntity })
+  async updateRecruiter(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() dto: UpdateTalentApplicationRecruiterDto,
+  ): Promise<TalentApplicationEntity> {
+    const application = await this.talentBankService.updateRecruiter(
+      id,
+      dto.recruiter,
+    );
     return TalentApplicationEntity.fromPrisma(application);
   }
 

@@ -1,29 +1,18 @@
-import Image from 'next/image'
-import Link from 'next/link'
+import { Brand } from '@/components/Brand'
 
 import { MainNav } from './_components/MainNav'
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-30 border-b border-border/60 bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/70">
-        <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-6">
-          <Link href="/" className="flex items-center gap-2">
-            <Image
-              src="/gzero-logo.png"
-              alt="Gzero"
-              width={56}
-              height={20}
-              sizes="56px"
-              className="opacity-80"
-            />
-            <span className="font-display text-sm font-semibold">Conta</span>
-          </Link>
+      <header className="sticky top-0 z-30 border-b border-border/60 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/65">
+        <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-6">
+          <Brand />
           <MainNav />
         </div>
       </header>
 
-      <main className="mx-auto max-w-3xl px-6 py-12">{children}</main>
+      <main className="mx-auto max-w-6xl px-6 py-10">{children}</main>
     </div>
   )
 }

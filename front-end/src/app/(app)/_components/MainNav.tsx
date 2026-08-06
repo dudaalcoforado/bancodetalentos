@@ -7,6 +7,8 @@ import { cn } from '@/lib/utils'
 
 const TABS = [
   { href: '/talent-bank', label: 'Banco de Talentos' },
+  { href: '/vagas', label: 'Vagas' },
+  { href: '/dados', label: 'Dados' },
   { href: '/docs', label: 'Docs' },
 ] as const
 

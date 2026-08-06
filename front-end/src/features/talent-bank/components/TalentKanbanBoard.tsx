@@ -13,11 +13,13 @@ import {
   type DragEndEvent,
   type DragStartEvent,
 } from '@dnd-kit/core'
-import { ArrowUpRight } from 'lucide-react'
+import { ArrowUpRight, UserCog } from 'lucide-react'
 
 import { Select } from '@/components/ui/Select'
 import { TALENT_STAGES, type TalentApplicationStage } from '@/features/talent-bank/stages'
+import { RECRUITERS } from '@/features/talent-bank/recruiters'
 import { useUpdateStage } from '@/features/talent-bank/hooks/useUpdateStage'
+import { useUpdateRecruiter } from '@/features/talent-bank/hooks/useUpdateRecruiter'
 import { cn } from '@/lib/utils'
 import type { TalentApplication } from '@/types/talent-application'
 
@@ -36,6 +38,7 @@ function vagaColorClass(vaga: string | null): string {
 
 export function TalentKanbanBoard({ applications }: { applications: TalentApplication[] }) {
   const updateStage = useUpdateStage()
+  const updateRecruiter = useUpdateRecruiter()
   const [activeId, setActiveId] = useState<string | null>(null)
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -84,6 +87,7 @@ export function TalentKanbanBoard({ applications }: { applications: TalentApplic
             dot={stage.dot}
             applications={byStage.get(stage.value) ?? []}
             onChangeStage={(id, nextStage) => updateStage.mutate({ id, stage: nextStage })}
+            onChangeRecruiter={(id, recruiter) => updateRecruiter.mutate({ id, recruiter })}
           />
         ))}
       </div>
@@ -103,6 +107,7 @@ function KanbanColumn({
   dot,
   applications,
   onChangeStage,
+  onChangeRecruiter,
 }: {
   stage: TalentApplicationStage
   label: string
@@ -110,6 +115,7 @@ function KanbanColumn({
   dot: string
   applications: TalentApplication[]
   onChangeStage: (id: string, stage: TalentApplicationStage) => void
+  onChangeRecruiter: (id: string, recruiter: string | null) => void
 }) {
   const { setNodeRef, isOver } = useDroppable({ id: stage })
 
@@ -133,7 +139,12 @@ function KanbanColumn({
       {/* Cards */}
       <div className="flex max-h-[calc(100vh-320px)] flex-col gap-2 overflow-y-auto pr-0.5">
         {applications.map((application) => (
-          <KanbanCard key={application.id} application={application} onChangeStage={onChangeStage} />
+          <KanbanCard
+            key={application.id}
+            application={application}
+            onChangeStage={onChangeStage}
+            onChangeRecruiter={onChangeRecruiter}
+          />
         ))}
         {applications.length === 0 ? (
           <p className="py-3 text-center text-xs text-muted-foreground/40">—</p>
@@ -146,9 +157,11 @@ function KanbanColumn({
 function KanbanCard({
   application,
   onChangeStage,
+  onChangeRecruiter,
 }: {
   application: TalentApplication
   onChangeStage: (id: string, stage: TalentApplicationStage) => void
+  onChangeRecruiter: (id: string, recruiter: string | null) => void
 }) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({ id: application.id })
 
@@ -164,7 +177,11 @@ function KanbanCard({
         isDragging && 'opacity-40',
       )}
     >
-      <KanbanCardContent application={application} onChangeStage={onChangeStage} />
+      <KanbanCardContent
+        application={application}
+        onChangeStage={onChangeStage}
+        onChangeRecruiter={onChangeRecruiter}
+      />
     </div>
   )
 }
@@ -173,10 +190,12 @@ function KanbanCardContent({
   application,
   dragging,
   onChangeStage,
+  onChangeRecruiter,
 }: {
   application: TalentApplication
   dragging?: boolean
   onChangeStage?: (id: string, stage: TalentApplicationStage) => void
+  onChangeRecruiter?: (id: string, recruiter: string | null) => void
 }) {
   return (
     <div
@@ -242,6 +261,35 @@ function KanbanCardContent({
             </option>
           ))}
         </Select>
+      ) : null}
+
+      {/* Recruiter selector */}
+      {onChangeRecruiter ? (
+        <label className="flex items-center gap-1.5" onPointerDown={(e) => e.stopPropagation()}>
+          <UserCog className="size-3 shrink-0 text-muted-foreground/50" />
+          <Select
+            value={application.recruiter ?? ''}
+            onChange={(e) =>
+              onChangeRecruiter(application.id, e.target.value === '' ? null : e.target.value)
+            }
+            className={cn(
+              'h-7 rounded-xl border-border/60 text-[11px]',
+              !application.recruiter && 'text-muted-foreground',
+            )}
+          >
+            <option value="">Sem recrutador</option>
+            {RECRUITERS.map((r) => (
+              <option key={r} value={r}>
+                {r}
+              </option>
+            ))}
+          </Select>
+        </label>
+      ) : application.recruiter ? (
+        <span className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground">
+          <UserCog className="size-3 shrink-0 text-muted-foreground/50" />
+          {application.recruiter}
+        </span>
       ) : null}
 
       {/* Date */}

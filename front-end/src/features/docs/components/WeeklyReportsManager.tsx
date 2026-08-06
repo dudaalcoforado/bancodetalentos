@@ -1,7 +1,17 @@
 'use client'
 
 import { useState } from 'react'
-import { Copy, FilePlus2, Loader2, Plus, Trash2 } from 'lucide-react'
+import {
+  ArrowLeft,
+  CalendarDays,
+  ChevronRight,
+  Copy,
+  Download,
+  FilePlus2,
+  Loader2,
+  Plus,
+  Trash2,
+} from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
 import { buttonVariants } from '@/components/ui/Button'
@@ -10,11 +20,13 @@ import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
 import { Textarea } from '@/components/ui/Textarea'
 import { cn } from '@/lib/utils'
+import { exportWeeklyReportPdf } from '@/features/docs/exportPdf'
 import { createEmptyVaga, newId } from '@/features/docs/seed'
 import { useWeeklyReports } from '@/features/docs/useWeeklyReports'
 import { REPORT_PRIORITIES, type ReportPriority, type ReportVaga, type WeeklyReport } from '@/features/docs/types'
 
 const dateFormatter = new Intl.DateTimeFormat('pt-BR', { dateStyle: 'long', timeStyle: 'short' })
+const shortDateFormatter = new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short' })
 
 const PRIORITY_STYLE: Record<ReportPriority, string> = {
   P0: 'bg-red-100 text-red-700',
@@ -36,7 +48,7 @@ export function WeeklyReportsManager() {
     )
   }
 
-  const current = reports.find((r) => r.id === selectedId) ?? reports[0] ?? null
+  const current = selectedId ? reports.find((r) => r.id === selectedId) ?? null : null
 
   function handleCreate() {
     setSelectedId(createReport())
@@ -52,44 +64,48 @@ export function WeeklyReportsManager() {
     setSelectedId(null)
   }
 
-  return (
-    <div className="flex flex-col gap-5">
-      {/* Seletor de relatórios */}
-      <div className="flex flex-wrap items-center gap-2">
-        {reports.map((report) => (
-          <button
-            key={report.id}
-            type="button"
-            onClick={() => setSelectedId(report.id)}
-            className={cn(
-              'rounded-full border px-3 py-1.5 text-sm font-medium transition-colors',
-              current?.id === report.id
-                ? 'border-primary/40 bg-primary/10 text-primary'
-                : 'border-border/60 text-muted-foreground hover:bg-muted hover:text-foreground',
-            )}
-          >
-            {report.titulo || 'Sem título'}
-          </button>
-        ))}
+  // Detail view — an individual report open for editing.
+  if (current) {
+    return (
+      <div className="flex flex-col gap-4">
         <button
           type="button"
-          onClick={handleCreate}
-          className={cn(buttonVariants({ variant: 'outline', size: 'sm' }), 'rounded-full')}
+          onClick={() => setSelectedId(null)}
+          className="inline-flex w-fit items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
         >
-          <FilePlus2 className="size-3.5" />
-          Novo relatório
+          <ArrowLeft className="size-4" />
+          Voltar para a lista
         </button>
-      </div>
-
-      {current ? (
         <ReportEditor
           key={current.id}
           report={current}
           onMutate={(recipe) => mutateReport(current.id, recipe)}
           onDuplicate={() => handleDuplicate(current.id)}
           onDelete={() => handleDelete(current.id)}
+          onExport={() => exportWeeklyReportPdf(current)}
         />
-      ) : (
+      </div>
+    )
+  }
+
+  // List view — pick a date to open.
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-muted-foreground">
+          {reports.length} {reports.length === 1 ? 'relatório' : 'relatórios'}
+        </p>
+        <button
+          type="button"
+          onClick={handleCreate}
+          className={cn(buttonVariants({ variant: 'outline', size: 'sm' }))}
+        >
+          <FilePlus2 className="size-3.5" />
+          Novo relatório
+        </button>
+      </div>
+
+      {reports.length === 0 ? (
         <Card className="ring-foreground/5">
           <CardContent className="flex min-h-[30vh] flex-col items-center justify-center gap-3 p-8 text-center text-muted-foreground">
             <p className="text-sm">Nenhum relatório ainda.</p>
@@ -103,8 +119,69 @@ export function WeeklyReportsManager() {
             </button>
           </CardContent>
         </Card>
+      ) : (
+        <Card className="ring-foreground/5">
+          <CardContent className="p-0">
+            <ul className="divide-y divide-border/40">
+              {reports.map((report) => (
+                <ReportRow
+                  key={report.id}
+                  report={report}
+                  onOpen={() => setSelectedId(report.id)}
+                  onExport={() => exportWeeklyReportPdf(report)}
+                />
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
       )}
     </div>
+  )
+}
+
+function ReportRow({
+  report,
+  onOpen,
+  onExport,
+}: {
+  report: WeeklyReport
+  onOpen: () => void
+  onExport: () => void
+}) {
+  const totalPosicoes = report.vagas.reduce((sum, v) => sum + (v.qtdVagas || 0), 0)
+
+  return (
+    <li className="flex items-center gap-2 pr-3 transition-colors hover:bg-muted/40">
+      <button
+        type="button"
+        onClick={onOpen}
+        className="flex min-w-0 flex-1 items-center gap-3 px-5 py-3.5 text-left"
+      >
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+          <CalendarDays className="size-5" />
+        </span>
+        <span className="flex min-w-0 flex-col">
+          <span className="truncate text-sm font-semibold text-foreground">
+            {report.titulo || 'Sem título'}
+          </span>
+          <span className="truncate text-xs text-muted-foreground">
+            Criado em {shortDateFormatter.format(new Date(report.criadoEm))} ·{' '}
+            {report.vagas.length} {report.vagas.length === 1 ? 'vaga' : 'vagas'} · {totalPosicoes}{' '}
+            {totalPosicoes === 1 ? 'posição' : 'posições'}
+          </span>
+        </span>
+      </button>
+      <button
+        type="button"
+        onClick={onExport}
+        aria-label={`Exportar PDF do relatório ${report.titulo || 'sem título'}`}
+        className="inline-flex shrink-0 items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary"
+      >
+        <Download className="size-3.5" />
+        <span className="hidden sm:inline">PDF</span>
+      </button>
+      <ChevronRight className="size-4 shrink-0 text-muted-foreground/40" />
+    </li>
   )
 }
 
@@ -113,11 +190,13 @@ function ReportEditor({
   onMutate,
   onDuplicate,
   onDelete,
+  onExport,
 }: {
   report: WeeklyReport
   onMutate: (recipe: (report: WeeklyReport) => WeeklyReport) => void
   onDuplicate: () => void
   onDelete: () => void
+  onExport: () => void
 }) {
   function mutateVaga(vagaId: string, recipe: (vaga: ReportVaga) => ReportVaga) {
     onMutate((r) => ({
@@ -154,6 +233,14 @@ function ReportEditor({
             </p>
           </div>
           <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={onExport}
+              className={cn(buttonVariants({ size: 'sm' }))}
+            >
+              <Download className="size-3.5" />
+              Exportar PDF
+            </button>
             <button
               type="button"
               onClick={onDuplicate}

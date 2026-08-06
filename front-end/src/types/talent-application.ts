@@ -54,6 +54,7 @@ export interface TalentApplication {
   howFound: string | null
   referredBy: string | null
   affirmativeGroups: string[]
+  recruiter: string | null
   stage: TalentApplicationStage
   createdAt: string
 }
